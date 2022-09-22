@@ -17,13 +17,40 @@ Shader "ShaderBible/Simple_unlit"
         // Se declara como float porque es un enumerator
         [KeywordEnum (Off, Red, Blue)] _Options ("Color Options", Float) = 0
 
+        // ENUM Type Properties
+        [Enum (Off, 0, Front, 1, Back, 2)]
+        _Face ("Face Culling", Float) = 0
+
+        // Power Slider
+        [PowerSlider(3.0)]
+        _Brightness ("Brightness", Range(0.01, 1)) = 0.08
+
+        // Int Range
+        [IntRange]
+        _Samples ("Samples", Range(0,255)) = 100
+
+        // Header and Space - These Drawers can be daisychained
+        [Header(Category name)] [Space]
+        _PropertyName01 ("Display Name 01", Float) = 0
+        _PropertyName02 ("Display Name 02", Float) = 0
+
+        [Header(Specular properties)] [Space]
+        _Specularity ("Specularity", Range(0.01, 1)) = 0.08
+        _SpecBrightness ("Brightness", Range(0.01, 1)) = 0.08
+        _SpecularColor ("Specular Color", Color) = (1,1,1,1)
+        [Space(20)]
+        [Header(Texture properties)][Space]
+        _BaseTex ("Base Texture", 2D) = "white" {}
 
 
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Opaque" "Queue"="Geometry" }
         LOD 100
+
+        // Used with ENUM to define Face Culling
+        Cull [_Face]
 
         Pass
         {
@@ -35,9 +62,6 @@ Shader "ShaderBible/Simple_unlit"
 
             #pragma shader_feature _FACTOR_ON
             #pragma multi_compile _OPTIONS_OFF _OPTIONS_RED _OPTIONS_BLUE
-
-
-
 
 
             #include "UnityCG.cginc"
@@ -59,6 +83,10 @@ Shader "ShaderBible/Simple_unlit"
             float4 _MainTex_ST;
             float4 _Color;
             half _Factor;
+            float _Brightness;
+            int _Samples;
+
+
 
             v2f vert (appdata v)
             {
